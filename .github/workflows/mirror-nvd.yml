@@ -32,3 +32,7 @@ jobs:
           git add nvd
           git commit -m "update NVD feeds" || echo "no changes"
           git push
+
+      - name: Generate cache.properties
+  	run: |
+    	  echo "lastUpdated=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" > nvd/cache.properties
