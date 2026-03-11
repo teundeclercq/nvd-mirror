@@ -1,0 +1,34 @@
+name: Mirror NVD feeds
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create dir
+        run: mkdir -p nvd
+
+      - name: Download feeds
+        run: |
+          BASE=https://nvd.nist.gov/feeds/json/cve/1.1
+
+          curl -L $BASE/nvdcve-1.1-modified.json.gz -o nvd/nvdcve-1.1-modified.json.gz
+          curl -L $BASE/nvdcve-1.1-recent.json.gz -o nvd/nvdcve-1.1-recent.json.gz
+
+          curl -L $BASE/nvdcve-1.1-modified.meta -o nvd/nvdcve-1.1-modified.meta
+          curl -L $BASE/nvdcve-1.1-recent.meta -o nvd/nvdcve-1.1-recent.meta
+
+      - name: Commit
+        run: |
+          git config user.name github-actions
+          git config user.email actions@github.com
+          git add nvd
+          git commit -m "update NVD feeds" || echo "no changes"
+          git push
