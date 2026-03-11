@@ -34,5 +34,5 @@ jobs:
           git push
 
       - name: Generate cache.properties
-  	run: |
-    	  echo "lastUpdated=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" > nvd/cache.properties
+  	    run: |
+    	    echo "lastUpdated=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" > nvd/cache.properties
