@@ -19,11 +19,11 @@ jobs:
         run: |
           BASE=https://nvd.nist.gov/feeds/json/cve/1.1
 
-          curl -L $BASE/nvdcve-1.1-modified.json.gz -o nvd/nvdcve-1.1-modified.json.gz
-          curl -L $BASE/nvdcve-1.1-recent.json.gz -o nvd/nvdcve-1.1-recent.json.gz
+          curl -L $BASE/nvdcve-1.1-modified.json.gz -o nvd/nvdcve-modified.json.gz
+          curl -L $BASE/nvdcve-1.1-recent.json.gz -o nvd/nvdcve-recent.json.gz
 
-          curl -L $BASE/nvdcve-1.1-modified.meta -o nvd/nvdcve-1.1-modified.meta
-          curl -L $BASE/nvdcve-1.1-recent.meta -o nvd/nvdcve-1.1-recent.meta
+          curl -L $BASE/nvdcve-1.1-modified.meta -o nvd/nvdcve-modified.meta
+          curl -L $BASE/nvdcve-1.1-recent.meta -o nvd/nvdcve-recent.meta
 
       - name: Commit
         run: |
