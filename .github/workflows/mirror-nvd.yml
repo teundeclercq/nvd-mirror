@@ -25,14 +25,18 @@ jobs:
           curl -L $BASE/nvdcve-2.0-modified.meta -o nvd/nvdcve-modified.meta
           curl -L $BASE/nvdcve-2.0-recent.meta -o nvd/nvdcve-recent.meta
 
+          YEAR=$(date +%Y)
+
+          for y in $(seq 2002 $YEAR); do
+            curl -L $BASE/nvdcve-2.0-$y.json.gz -o nvd/nvdcve-$y.json.gz
+            curl -L $BASE/nvdcve-2.0-$y.meta -o nvd/nvdcve-$y.meta
+          done
+
       - name: Commit
         run: |
           git config user.name github-actions
           git config user.email actions@github.com
-          
-          DATE=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
-          echo "lastUpdated=$DATE" > nvd/cache.properties
-          
+                    
           git add nvd
           git commit -m "update NVD feeds" || echo "no changes"
           git push
