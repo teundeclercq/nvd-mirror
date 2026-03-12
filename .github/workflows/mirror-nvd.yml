@@ -12,25 +12,12 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Create dir
-        run: mkdir -p nvd
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
 
       - name: Download feeds
-        run: |
-          BASE=https://nvd.nist.gov/feeds/json/cve/2.0
-
-          curl -L $BASE/nvdcve-2.0-modified.json.gz -o nvd/nvdcve-modified.json.gz
-          curl -L $BASE/nvdcve-2.0-recent.json.gz -o nvd/nvdcve-recent.json.gz
-
-          curl -L $BASE/nvdcve-2.0-modified.meta -o nvd/nvdcve-modified.meta
-          curl -L $BASE/nvdcve-2.0-recent.meta -o nvd/nvdcve-recent.meta
-
-          YEAR=$(date +%Y)
-
-          for y in $(seq 2002 $YEAR); do
-            curl -L $BASE/nvdcve-2.0-$y.json.gz -o nvd/nvdcve-$y.json.gz
-            curl -L $BASE/nvdcve-2.0-$y.meta -o nvd/nvdcve-$y.meta
-          done
+        run: go run mirror.go
 
       - name: Commit
         run: |
