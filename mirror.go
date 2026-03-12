@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-const nvdBase = "https://static.nvd.nist.gov/feeds/json/cve/2.0"
+const nvdBase = "https://nvd.nist.gov/feeds/json/cve/2.0"
 const kevURL = "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
 
 var client = &http.Client{
