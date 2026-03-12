@@ -17,22 +17,26 @@ jobs:
 
       - name: Download feeds
         run: |
-          BASE=https://nvd.nist.gov/feeds/json/cve/1.1
+          BASE=https://nvd.nist.gov/feeds/json/cve/2.0
 
-          curl -L $BASE/nvdcve-1.1-modified.json.gz -o nvd/nvdcve-1.1-modified.json.gz
-          curl -L $BASE/nvdcve-1.1-recent.json.gz -o nvd/nvdcve-1.1-recent.json.gz
+          curl -L $BASE/nvdcve-2.0-modified.json.gz -o nvd/nvdcve-modified.json.gz
+          curl -L $BASE/nvdcve-2.0-recent.json.gz -o nvd/nvdcve-recent.json.gz
 
-          curl -L $BASE/nvdcve-1.1-modified.meta -o nvd/nvdcve-1.1-modified.meta
-          curl -L $BASE/nvdcve-1.1-recent.meta -o nvd/nvdcve-1.1-recent.meta
+          curl -L $BASE/nvdcve-2.0-modified.meta -o nvd/nvdcve-modified.meta
+          curl -L $BASE/nvdcve-2.0-recent.meta -o nvd/nvdcve-recent.meta
 
       - name: Commit
         run: |
           git config user.name github-actions
           git config user.email actions@github.com
+          
+          DATE=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
+          echo "lastUpdated=$DATE" > nvd/cache.properties
+          
           git add nvd
           git commit -m "update NVD feeds" || echo "no changes"
           git push
 
-      - name: Generate cache.properties
-  	run: |
-    	  echo "lastUpdated=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" > nvd/cache.properties
+  
+      
+
