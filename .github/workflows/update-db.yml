@@ -24,6 +24,8 @@ jobs:
           unzip dc.zip
 
       - name: Update database
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: |
           mkdir -p dependency-check-data
           ./dependency-check/bin/dependency-check.sh \
