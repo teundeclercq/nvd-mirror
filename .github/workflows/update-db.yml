@@ -1,0 +1,40 @@
+name: Update Dependency-Check DB
+
+on:
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+
+jobs:
+  update-db:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Download Dependency Check
+        run: |
+          curl -L https://github.com/dependency-check/DependencyCheck/releases/latest/download/dependency-check-12.1.8-release.zip -o dc.zip
+          unzip dc.zip
+
+      - name: Update database
+        run: |
+          mkdir -p dependency-check-data
+          ./dependency-check/bin/dependency-check.sh \
+            --updateonly \
+            --data dependency-check-data
+
+      - name: Commit database
+        run: |
+          git config user.name github-actions
+          git config user.email actions@github.com
+
+          git add dependency-check-data
+          git commit -m "update dependency-check DB" || echo "no changes"
+          git push
