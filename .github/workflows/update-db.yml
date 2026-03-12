@@ -20,7 +20,7 @@ jobs:
 
       - name: Download Dependency Check
         run: |
-          curl -L https://github.com/dependency-check/DependencyCheck/releases/latest/download/dependency-check-12.1.8-release.zip -o dc.zip
+          curl -L https://github.com/dependency-check/DependencyCheck/releases/download/v12.1.8/dependency-check-12.1.8-release.zip -o dc.zip
           unzip dc.zip
 
       - name: Update database
