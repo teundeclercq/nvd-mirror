@@ -16,26 +16,47 @@ const nvdBase = "https://nvd.nist.gov/feeds/json/cve/2.0"
 const kevURL = "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
 
 var client = &http.Client{
-	Timeout: 60 * time.Second,
+	Timeout: 5 * time.Minute,
 }
+
+var limiter = make(chan struct{}, 4)
 
 func fetch(url string) ([]byte, error) {
 
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Set("User-Agent", "nvd-mirror")
+	var lastErr error
 
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, err
+	for i := 0; i < 3; i++ {
+
+		req, _ := http.NewRequest("GET", url, nil)
+		req.Header.Set("User-Agent", "nvd-mirror")
+
+		resp, err := client.Do(req)
+		if err != nil {
+			lastErr = err
+			time.Sleep(2 * time.Second)
+			continue
+		}
+
+		if resp.StatusCode != 200 {
+			resp.Body.Close()
+			lastErr = fmt.Errorf("http %d %s", resp.StatusCode, url)
+			time.Sleep(2 * time.Second)
+			continue
+		}
+
+		data, err := io.ReadAll(resp.Body)
+		resp.Body.Close()
+
+		if err != nil {
+			lastErr = err
+			time.Sleep(2 * time.Second)
+			continue
+		}
+
+		return data, nil
 	}
 
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("http %d %s", resp.StatusCode, url)
-	}
-
-	return io.ReadAll(resp.Body)
+	return nil, lastErr
 }
 
 func readSHA(meta []byte) string {
@@ -70,12 +91,14 @@ func downloadFeed(file string, wg *sync.WaitGroup) {
 
 	defer wg.Done()
 
+	limiter <- struct{}{}
+	defer func() { <-limiter }()
+
 	base := strings.TrimSuffix(file, ".json.gz")
 
 	metaURL := nvdBase + "/" + base + ".meta"
 	jsonURL := nvdBase + "/" + file
 
-	// rename nvdcve-2.0-* -> nvdcve-*
 	mirrorBase := strings.Replace(base, "nvdcve-2.0-", "nvdcve-", 1)
 
 	metaPath := filepath.Join("nvd", mirrorBase+".meta")
