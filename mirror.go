@@ -70,10 +70,12 @@ func downloadFeed(file string, wg *sync.WaitGroup) {
 
 	defer wg.Done()
 
-	metaURL := nvdBase + "/" + file + ".meta"
+	base := strings.TrimSuffix(file, ".json.gz")
+
+	metaURL := nvdBase + "/" + base + ".meta"
 	jsonURL := nvdBase + "/" + file
 
-	metaPath := filepath.Join("nvd", file+".meta")
+	metaPath := filepath.Join("nvd", base+".meta")
 	jsonPath := filepath.Join("nvd", file)
 
 	fmt.Println("Checking", file)
