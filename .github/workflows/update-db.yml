@@ -33,11 +33,12 @@ jobs:
             --data dependency-check-data \
             --nvdApiKey "$NVD_API_KEY"
 
-      - name: Commit database
+      - name: Tar database
         run: |
-          git config user.name github-actions
-          git config user.email actions@github.com
+          tar -czf dependency-check-db.tar.gz data
 
-          git add dependency-check-data
-          git commit -m "update dependency-check DB" || echo "no changes"
-          git push
+      - name: Upload release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest-db
+          files: dependency-check-db.tar.gz
