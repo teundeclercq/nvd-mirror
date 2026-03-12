@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-const nvdBase = "https://nvd.nist.gov/feeds/json/cve/2.0"
+const nvdBase = "https://static.nvd.nist.gov/feeds/json/cve/2.0"
 const kevURL = "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
 
 var client = &http.Client{
@@ -75,8 +75,11 @@ func downloadFeed(file string, wg *sync.WaitGroup) {
 	metaURL := nvdBase + "/" + base + ".meta"
 	jsonURL := nvdBase + "/" + file
 
-	metaPath := filepath.Join("nvd", base+".meta")
-	jsonPath := filepath.Join("nvd", file)
+	// rename nvdcve-2.0-* -> nvdcve-*
+	mirrorBase := strings.Replace(base, "nvdcve-2.0-", "nvdcve-", 1)
+
+	metaPath := filepath.Join("nvd", mirrorBase+".meta")
+	jsonPath := filepath.Join("nvd", mirrorBase+".json.gz")
 
 	fmt.Println("Checking", file)
 
