@@ -24,7 +24,8 @@ jobs:
           git config user.name github-actions
           git config user.email actions@github.com
                     
-          git add nvd
+          git add nvd 
+          git add cisa
           git commit -m "update NVD feeds" || echo "no changes"
           git push
 
