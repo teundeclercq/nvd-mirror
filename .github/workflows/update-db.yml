@@ -31,6 +31,7 @@ jobs:
           ./dependency-check/bin/dependency-check.sh \
             --updateonly \
             --data dependency-check-data
+            --nvdApiKey "$NVD_API_KEY"
 
       - name: Commit database
         run: |
